@@ -46,8 +46,8 @@
     position:absolute;
     inset:0;
     background:
-      radial-gradient(ellipse 70% 60% at 50% 38%, transparent 20%, rgba(5,6,8,0.72) 78%),
-      linear-gradient(180deg, rgba(5,6,8,0.55) 0%, rgba(5,6,8,0.4) 30%, rgba(5,6,8,0.75) 78%, rgba(5,6,8,0.95) 100%);
+      radial-gradient(ellipse 70% 60% at 50% 38%, transparent 30%, rgba(5,6,8,0.55) 82%),
+      linear-gradient(180deg, rgba(5,6,8,0.4) 0%, rgba(5,6,8,0.25) 30%, rgba(5,6,8,0.55) 78%, rgba(5,6,8,0.8) 100%);
   }
   .bg-flash{
     position:absolute;
@@ -141,7 +141,9 @@
   .player{
     width:100%;
     max-width:520px;
-    background:linear-gradient(160deg, rgba(26,34,48,0.9), rgba(10,12,16,0.9));
+    background:linear-gradient(160deg, rgba(26,34,48,0.45), rgba(10,12,16,0.45));
+    backdrop-filter:blur(14px) saturate(1.2);
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);
     border:1px solid rgba(79,214,255,0.25);
     border-radius:16px;
     padding:28px 28px 22px;
@@ -266,7 +268,9 @@
   .legend-box{
     width:100%;
     max-width:520px;
-    background:linear-gradient(160deg, rgba(26,34,48,0.9), rgba(10,12,16,0.9));
+    background:linear-gradient(160deg, rgba(26,34,48,0.45), rgba(10,12,16,0.45));
+    backdrop-filter:blur(14px) saturate(1.2);
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);
     border:1px solid rgba(79,214,255,0.25);
     border-radius:16px;
     box-shadow:0 0 60px rgba(79,214,255,0.06), inset 0 1px 0 rgba(255,255,255,0.03);
