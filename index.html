@@ -22,10 +22,58 @@
     overflow-x:hidden;
   }
   body{
+    background:var(--bg);
+    position:relative;
+  }
+
+  .bg-scene{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    overflow:hidden;
+    background:var(--bg);
+  }
+  .bg-frame{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center 30%;
+    filter:brightness(0.5) saturate(1.15) contrast(1.05);
+  }
+  .bg-vignette{
+    position:absolute;
+    inset:0;
     background:
-      radial-gradient(ellipse at 50% -10%, rgba(79,214,255,0.12), transparent 60%),
-      radial-gradient(ellipse at 50% 110%, rgba(232,184,75,0.08), transparent 60%),
-      var(--bg);
+      radial-gradient(ellipse 70% 60% at 50% 38%, transparent 20%, rgba(5,6,8,0.72) 78%),
+      linear-gradient(180deg, rgba(5,6,8,0.55) 0%, rgba(5,6,8,0.4) 30%, rgba(5,6,8,0.75) 78%, rgba(5,6,8,0.95) 100%);
+  }
+  .bg-flash{
+    position:absolute;
+    inset:-20% -60%;
+    background:linear-gradient(100deg,
+      transparent 42%,
+      rgba(180,220,255,0.35) 47%,
+      rgba(255,255,255,0.95) 50%,
+      rgba(180,220,255,0.35) 53%,
+      transparent 58%);
+    transform:translateX(-160%);
+    opacity:0;
+    mix-blend-mode:screen;
+    pointer-events:none;
+  }
+  .bg-flash.active{
+    animation:bgSweep 1.2s ease-out;
+  }
+  @keyframes bgSweep{
+    0%{ transform:translateX(-160%); opacity:0; }
+    8%{ opacity:1; }
+    50%{ transform:translateX(0%); opacity:1; }
+    100%{ transform:translateX(160%); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bg-flash.active{ animation:none; }
   }
 
   .wrap{
@@ -244,9 +292,124 @@
   @media (max-width:480px){
     .player{padding:22px 18px 18px;}
   }
+
+  /* ---------- Legend crawl ---------- */
+  .legend-trigger{
+    margin-top:-22px;
+    margin-bottom:40px;
+    font-size:0.72rem;
+    letter-spacing:0.25em;
+    text-transform:uppercase;
+    color:var(--blue-dim);
+    background:rgba(79,214,255,0.06);
+    border:1px solid rgba(79,214,255,0.28);
+    border-radius:999px;
+    padding:10px 26px;
+    cursor:pointer;
+    transition:color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    font-family:inherit;
+  }
+  .legend-trigger:hover{
+    color:var(--blue);
+    border-color:var(--blue);
+    background:rgba(79,214,255,0.12);
+  }
+
+  .legend-overlay{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    background:
+      radial-gradient(ellipse at 50% 15%, rgba(40,70,100,0.35), transparent 55%),
+      #020304;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.4s ease;
+    display:flex;
+    flex-direction:column;
+  }
+  .legend-overlay.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .legend-close{
+    position:absolute;
+    top:22px;
+    right:22px;
+    z-index:2;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:1px solid rgba(79,214,255,0.3);
+    background:rgba(5,6,8,0.6);
+    color:var(--text);
+    font-size:1.1rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .legend-close:hover{ border-color:var(--blue); color:var(--blue); }
+
+  .crawl-viewport{
+    position:relative;
+    flex:1;
+    width:100%;
+    overflow:hidden;
+    perspective:700px;
+  }
+
+  .crawl-text{
+    position:absolute;
+    left:50%;
+    top:100%;
+    width:min(540px, 74vw);
+    transform-origin:50% 0%;
+    transform:translate(-50%, 0) rotateX(25deg) scale(1);
+    animation:crawl 115s linear forwards;
+    text-align:center;
+  }
+  .crawl-text h2{
+    font-family:"Impact","Arial Black",sans-serif;
+    font-weight:400;
+    font-size:2rem;
+    letter-spacing:0.04em;
+    color:var(--blue);
+    -webkit-text-stroke:1px rgba(255,255,255,0.15);
+    margin-bottom:2.2em;
+  }
+  .crawl-text p{
+    font-size:1.15rem;
+    line-height:1.7;
+    color:var(--text);
+    margin-bottom:1.1em;
+  }
+
+  @keyframes crawl{
+    0%{ transform:translate(-50%, 0) rotateX(25deg) scale(1); }
+    100%{ transform:translate(-50%, -160%) rotateX(25deg) scale(0.5); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .crawl-viewport{ overflow-y:auto; perspective:none; padding:80px 20px; }
+    .crawl-text{
+      position:static;
+      transform:none;
+      animation:none;
+      margin:0 auto;
+    }
+  }
 </style>
 </head>
 <body>
+
+<div class="bg-scene" aria-hidden="true">
+  <img class="bg-frame" id="bgFrame" src="assets/frames/frame-1.png" alt="">
+  <div class="bg-flash" id="bgFlash"></div>
+  <div class="bg-vignette"></div>
+</div>
 
 <div class="wrap">
   <div class="patch-stage">
@@ -256,6 +419,8 @@
     <div class="sweep"></div>
   </div>
   <div class="tagline">Rock &amp; Roll With A Pulse</div>
+
+  <button class="legend-trigger" id="legendTrigger" type="button">The Legend</button>
 
   <div class="player">
     <div class="track-title">Stand And Fight</div>
@@ -285,6 +450,53 @@
   </div>
 
   <footer>© 2026 Thunderheart</footer>
+</div>
+
+<div class="legend-overlay" id="legendOverlay">
+  <button class="legend-close" id="legendClose" type="button" aria-label="Close">✕</button>
+  <div class="crawl-viewport">
+    <div class="crawl-text">
+      <h2>The Legend of Thunderheart</h2>
+      <p>Long before kingdoms were carved from stone... before the first sword was forged... before men learned to fear the darkness... there was only the Storm.</p>
+      <p>When the heavens were torn apart by the Great Thunder War, the sky burned for a thousand nights. Titans clashed. Mountains shattered. Oceans rose. The world stood on the edge of oblivion.</p>
+      <p>Then came the final strike.</p>
+      <p>Not of fire.</p>
+      <p>Not of light.</p>
+      <p>But of destiny.</p>
+      <p>It pierced the heart of the last warrior who refused to kneel.</p>
+      <p>Instead of death, the storm became one with him.</p>
+      <p>His heart transformed into an eternal source of thunder, courage, and unbreakable will.</p>
+      <p>From that moment...</p>
+      <p>He became THUNDERHEART.</p>
+      <p>He was never a king.</p>
+      <p>Never a god.</p>
+      <p>Never a conqueror.</p>
+      <p>He was the guardian between hope and darkness.</p>
+      <p>A lone warrior destined to rise whenever the world stood on the brink of ruin.</p>
+      <p>When tyrants sought dominion...</p>
+      <p>When monsters walked the earth...</p>
+      <p>When fear silenced the brave...</p>
+      <p>The storm answered.</p>
+      <p>But ThunderHeart was never meant to live forever.</p>
+      <p>His power could not die...</p>
+      <p>Only sleep.</p>
+      <p>When one bearer falls, the Heart chooses another.</p>
+      <p>Not the strongest.</p>
+      <p>Not the richest.</p>
+      <p>Not the chosen by birth.</p>
+      <p>Only those willing to stand alone against impossible odds.</p>
+      <p>For ThunderHeart is not a man.</p>
+      <p>It is a legacy.</p>
+      <p>They say the signs always come first.</p>
+      <p>The wind grows still.</p>
+      <p>Clouds gather beneath a clear sky.</p>
+      <p>The distant rumble echoes across forgotten mountains.</p>
+      <p>And somewhere...</p>
+      <p>A heartbeat begins to thunder.</p>
+      <p>When that sound returns...</p>
+      <p>The darkness knows its time has ended.</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -347,6 +559,60 @@
   audio.addEventListener('ended', () => {
     playIcon.style.display = 'block';
     pauseIcon.style.display = 'none';
+  });
+
+  const bgFrame = document.getElementById('bgFrame');
+  const bgFlash = document.getElementById('bgFlash');
+  const totalFrames = 5;
+  const holdMs = [3200, 2600, 2200, 1800, 5000];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let frameIndex = 0;
+
+  function advanceFrame(){
+    frameIndex = (frameIndex + 1) % totalFrames;
+    const nextSrc = `assets/frames/frame-${frameIndex + 1}.png`;
+
+    if(reduceMotion){
+      bgFrame.src = nextSrc;
+    } else {
+      bgFlash.classList.remove('active');
+      void bgFlash.offsetWidth;
+      bgFlash.classList.add('active');
+      setTimeout(() => { bgFrame.src = nextSrc; }, 600);
+    }
+
+    setTimeout(advanceFrame, holdMs[frameIndex]);
+  }
+
+  setTimeout(advanceFrame, holdMs[0]);
+
+  const legendTrigger = document.getElementById('legendTrigger');
+  const legendClose = document.getElementById('legendClose');
+  const legendOverlay = document.getElementById('legendOverlay');
+  const crawlText = document.querySelector('.crawl-text');
+
+  function openLegend(){
+    legendOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if(!reduceMotion){
+      crawlText.style.animation = 'none';
+      void crawlText.offsetWidth;
+      crawlText.style.animation = '';
+    }
+  }
+
+  function closeLegend(){
+    legendOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  legendTrigger.addEventListener('click', openLegend);
+  legendClose.addEventListener('click', closeLegend);
+  legendOverlay.addEventListener('click', (e) => {
+    if(e.target === legendOverlay) closeLegend();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeLegend();
   });
 </script>
 
