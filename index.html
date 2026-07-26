@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thunderheart</title>
+<style>
+  :root{
+    --bg:#050608;
+    --steel:#1a2230;
+    --blue:#4fd6ff;
+    --blue-dim:#2a7ea3;
+    --gold:#e8b84b;
+    --text:#dbe6ef;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    min-height:100%;
+    overflow-x:hidden;
+  }
+  body{
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(79,214,255,0.12), transparent 60%),
+      radial-gradient(ellipse at 50% 110%, rgba(232,184,75,0.08), transparent 60%),
+      var(--bg);
+  }
+
+  .wrap{
+    max-width:900px;
+    margin:0 auto;
+    padding:6vh 24px 10vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+
+  .logo{
+    max-width:min(640px, 90vw);
+    width:100%;
+    filter:drop-shadow(0 0 40px rgba(79,214,255,0.25));
+    margin-bottom:8px;
+  }
+
+  .tagline{
+    letter-spacing:0.35em;
+    text-transform:uppercase;
+    font-size:0.75rem;
+    color:var(--blue);
+    margin-top:4px;
+    margin-bottom:48px;
+    opacity:0.85;
+  }
+
+  .player{
+    width:100%;
+    max-width:520px;
+    background:linear-gradient(160deg, rgba(26,34,48,0.9), rgba(10,12,16,0.9));
+    border:1px solid rgba(79,214,255,0.25);
+    border-radius:16px;
+    padding:28px 28px 22px;
+    box-shadow:0 0 60px rgba(79,214,255,0.06), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .track-title{
+    font-size:1.15rem;
+    font-weight:600;
+    letter-spacing:0.03em;
+    color:var(--text);
+  }
+  .track-sub{
+    font-size:0.8rem;
+    color:var(--blue-dim);
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    margin-top:2px;
+    margin-bottom:20px;
+  }
+
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  .play-btn{
+    flex:0 0 auto;
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    border:1px solid var(--gold);
+    background:radial-gradient(circle at 35% 30%, rgba(232,184,75,0.35), rgba(26,34,48,0.9));
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow:0 0 20px rgba(232,184,75,0.15);
+  }
+  .play-btn:hover{
+    transform:scale(1.06);
+    box-shadow:0 0 28px rgba(232,184,75,0.35);
+  }
+  .play-btn svg{ width:20px; height:20px; }
+
+  .seek-area{
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  input[type="range"]{
+    -webkit-appearance:none;
+    width:100%;
+    height:4px;
+    border-radius:2px;
+    background:rgba(79,214,255,0.15);
+    outline:none;
+    cursor:pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:var(--blue);
+    box-shadow:0 0 8px var(--blue);
+    cursor:pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:var(--blue);
+    box-shadow:0 0 8px var(--blue);
+    border:none;
+    cursor:pointer;
+  }
+  #seek{ background:linear-gradient(to right, var(--blue) 0%, var(--blue) 0%, rgba(79,214,255,0.15) 0%); }
+
+  .time-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:0.72rem;
+    color:var(--blue-dim);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .volume-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:18px;
+  }
+  .volume-row svg{
+    width:16px;
+    height:16px;
+    color:var(--blue-dim);
+    flex:0 0 auto;
+  }
+  #volume{
+    width:100px;
+  }
+
+  footer{
+    margin-top:56px;
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    color:rgba(219,230,239,0.35);
+    text-transform:uppercase;
+  }
+
+  @media (max-width:480px){
+    .player{padding:22px 18px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <img class="logo" src="assets/logo.png" alt="Thunderheart">
+  <div class="tagline">Rock &amp; Roll With A Pulse</div>
+
+  <div class="player">
+    <div class="track-title">Stand And Fight</div>
+    <div class="track-sub">Thunderheart</div>
+
+    <div class="controls">
+      <button class="play-btn" id="playBtn" aria-label="Play">
+        <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+
+      <div class="seek-area">
+        <input type="range" id="seek" min="0" max="100" value="0">
+        <div class="time-row">
+          <span id="curTime">0:00</span>
+          <span id="durTime">0:00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="volume-row">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+
+    <audio id="audio" src="assets/stand-and-fight.mp3" preload="metadata"></audio>
+  </div>
+
+  <footer>© 2026 Thunderheart</footer>
+</div>
+
+<script>
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const seek = document.getElementById('seek');
+  const volume = document.getElementById('volume');
+  const curTime = document.getElementById('curTime');
+  const durTime = document.getElementById('durTime');
+
+  function fmt(t){
+    if(!isFinite(t)) return '0:00';
+    const m = Math.floor(t/60);
+    const s = Math.floor(t%60).toString().padStart(2,'0');
+    return `${m}:${s}`;
+  }
+
+  playBtn.addEventListener('click', () => {
+    if(audio.paused){
+      audio.play();
+    } else {
+      audio.pause();
+    }
+  });
+
+  audio.addEventListener('play', () => {
+    playIcon.style.display = 'none';
+    pauseIcon.style.display = 'block';
+  });
+  audio.addEventListener('pause', () => {
+    playIcon.style.display = 'block';
+    pauseIcon.style.display = 'none';
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    durTime.textContent = fmt(audio.duration);
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if(audio.duration){
+      const pct = (audio.currentTime / audio.duration) * 100;
+      seek.value = pct;
+      seek.style.background = `linear-gradient(to right, var(--blue) ${pct}%, rgba(79,214,255,0.15) ${pct}%)`;
+    }
+    curTime.textContent = fmt(audio.currentTime);
+  });
+
+  seek.addEventListener('input', () => {
+    if(audio.duration){
+      audio.currentTime = (seek.value / 100) * audio.duration;
+    }
+  });
+
+  volume.addEventListener('input', () => {
+    audio.volume = volume.value;
+  });
+
+  audio.addEventListener('ended', () => {
+    playIcon.style.display = 'block';
+    pauseIcon.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
