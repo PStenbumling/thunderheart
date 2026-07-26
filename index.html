@@ -86,77 +86,46 @@
     text-align:center;
   }
 
-  .patch-stage{
+  .logo-mark{
     position:relative;
-    width:min(380px, 78vw);
-    aspect-ratio:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:8px;
+    width:min(280px, 60vw);
+    margin:64px auto 0;
   }
-  .patch-stage::before{
+  .logo-mark::before{
     content:"";
     position:absolute;
-    inset:-30px;
-    border-radius:50%;
-    background:radial-gradient(circle, rgba(79,214,255,0.16), transparent 70%);
-    filter:blur(6px);
+    inset:-26px;
+    background:radial-gradient(ellipse at 50% 50%, rgba(79,214,255,0.16), transparent 70%);
+    filter:blur(8px);
+    z-index:-1;
   }
-  .twill{
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    background:repeating-conic-gradient(from 0deg, #e7edf2 0deg 3deg, #4b5a68 3deg 6deg);
-    box-shadow:
-      0 0 0 2px var(--bg) inset,
-      0 14px 40px rgba(0,0,0,0.55),
-      0 0 34px rgba(79,214,255,0.22);
-  }
-  .patch-inner{
-    position:absolute;
-    inset:18px;
-    border-radius:50%;
-    overflow:hidden;
-    background:#000;
-    box-shadow: 0 0 0 3px var(--bg) inset, 0 2px 10px rgba(0,0,0,0.6) inset;
-  }
-  .patch-inner img{
-    position:absolute;
-    inset:0;
+  .logo-mark img{
+    display:block;
     width:100%;
-    height:100%;
-    object-fit:contain;
+    filter:drop-shadow(0 0 24px rgba(79,214,255,0.22));
+    -webkit-mask-image:radial-gradient(ellipse 62% 62% at 50% 50%, #000 50%, transparent 92%);
+    mask-image:radial-gradient(ellipse 62% 62% at 50% 50%, #000 50%, transparent 92%);
   }
-  .dome{
+  .mark-sweep{
     position:absolute;
-    inset:18px;
-    border-radius:50%;
-    background:radial-gradient(circle at 32% 24%, rgba(255,255,255,0.35), transparent 55%);
-    mix-blend-mode:soft-light;
-    pointer-events:none;
-  }
-  .sweep{
-    position:absolute;
-    inset:18px;
-    border-radius:50%;
+    inset:0;
     overflow:hidden;
     pointer-events:none;
+    mix-blend-mode:overlay;
   }
-  .sweep::after{
+  .mark-sweep::after{
     content:"";
     position:absolute;
     inset:-40% -140%;
     background:linear-gradient(100deg, transparent 42%, rgba(255,255,255,0.55) 49%, rgba(255,255,255,0.05) 52%, transparent 58%);
     animation:sweep 5s ease-in-out infinite;
-    mix-blend-mode:overlay;
   }
   @keyframes sweep{
     0%,55%{ transform:translateX(-38%); }
     100%{ transform:translateX(38%); }
   }
   @media (prefers-reduced-motion: reduce){
-    .sweep::after{ animation:none; transform:translateX(6%); }
+    .mark-sweep::after{ animation:none; transform:translateX(6%); }
   }
 
   .tagline{
@@ -293,113 +262,64 @@
     .player{padding:22px 18px 18px;}
   }
 
-  /* ---------- Legend crawl ---------- */
-  .legend-trigger{
-    margin-top:-22px;
-    margin-bottom:40px;
+  /* ---------- Legend box ---------- */
+  .legend-box{
+    width:100%;
+    max-width:520px;
+    background:linear-gradient(160deg, rgba(26,34,48,0.9), rgba(10,12,16,0.9));
+    border:1px solid rgba(79,214,255,0.25);
+    border-radius:16px;
+    box-shadow:0 0 60px rgba(79,214,255,0.06), inset 0 1px 0 rgba(255,255,255,0.03);
+    padding:20px 22px 18px;
+    margin-bottom:28px;
+  }
+  .legend-label{
     font-size:0.72rem;
     letter-spacing:0.25em;
     text-transform:uppercase;
     color:var(--blue-dim);
-    background:rgba(79,214,255,0.06);
-    border:1px solid rgba(79,214,255,0.28);
-    border-radius:999px;
-    padding:10px 26px;
-    cursor:pointer;
-    transition:color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-    font-family:inherit;
-  }
-  .legend-trigger:hover{
-    color:var(--blue);
-    border-color:var(--blue);
-    background:rgba(79,214,255,0.12);
-  }
-
-  .legend-overlay{
-    position:fixed;
-    inset:0;
-    z-index:50;
-    background:
-      radial-gradient(ellipse at 50% 15%, rgba(40,70,100,0.35), transparent 55%),
-      #020304;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity 0.4s ease;
-    display:flex;
-    flex-direction:column;
-  }
-  .legend-overlay.open{
-    opacity:1;
-    pointer-events:auto;
-  }
-
-  .legend-close{
-    position:absolute;
-    top:22px;
-    right:22px;
-    z-index:2;
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    border:1px solid rgba(79,214,255,0.3);
-    background:rgba(5,6,8,0.6);
-    color:var(--text);
-    font-size:1.1rem;
-    line-height:1;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .legend-close:hover{ border-color:var(--blue); color:var(--blue); }
-
-  .crawl-viewport{
-    position:relative;
-    flex:1;
-    width:100%;
-    overflow:hidden;
-    perspective:700px;
-  }
-
-  .crawl-text{
-    position:absolute;
-    left:50%;
-    top:100%;
-    width:min(540px, 74vw);
-    transform-origin:50% 0%;
-    transform:translate(-50%, 0) rotateX(25deg) scale(1);
-    animation:crawl 115s linear forwards;
     text-align:center;
+    margin-bottom:14px;
   }
-  .crawl-text h2{
-    font-family:"Impact","Arial Black",sans-serif;
-    font-weight:400;
-    font-size:2rem;
-    letter-spacing:0.04em;
-    color:var(--blue);
-    -webkit-text-stroke:1px rgba(255,255,255,0.15);
-    margin-bottom:2.2em;
+  .legend-viewport{
+    position:relative;
+    height:150px;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(180deg, transparent 0%, black 14%, black 86%, transparent 100%);
+    mask-image:linear-gradient(180deg, transparent 0%, black 14%, black 86%, transparent 100%);
   }
-  .crawl-text p{
-    font-size:1.15rem;
-    line-height:1.7;
+  .legend-scroll{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    animation:legendScroll 100s linear infinite;
+  }
+  .legend-scroll p{
+    font-size:0.85rem;
+    line-height:1.6;
     color:var(--text);
-    margin-bottom:1.1em;
+    text-align:center;
+    opacity:0.82;
+    margin-bottom:0.9em;
+    padding:0 6px;
   }
-
-  @keyframes crawl{
-    0%{ transform:translate(-50%, 0) rotateX(25deg) scale(1); }
-    100%{ transform:translate(-50%, -160%) rotateX(25deg) scale(0.5); }
+  @keyframes legendScroll{
+    0%{ transform:translateY(0); }
+    100%{ transform:translateY(-50%); }
   }
-
   @media (prefers-reduced-motion: reduce){
-    .crawl-viewport{ overflow-y:auto; perspective:none; padding:80px 20px; }
-    .crawl-text{
-      position:static;
-      transform:none;
-      animation:none;
-      margin:0 auto;
+    .legend-viewport{
+      height:220px;
+      overflow-y:auto;
+      -webkit-mask-image:none;
+      mask-image:none;
     }
+    .legend-scroll{
+      position:static;
+      animation:none;
+    }
+    .legend-scroll .legend-copy-2{ display:none; }
   }
 </style>
 </head>
@@ -412,15 +332,95 @@
 </div>
 
 <div class="wrap">
-  <div class="patch-stage">
-    <div class="twill"></div>
-    <div class="patch-inner"><img src="assets/logo.png" alt="Thunderheart"></div>
-    <div class="dome"></div>
-    <div class="sweep"></div>
-  </div>
   <div class="tagline">Rock &amp; Roll With A Pulse</div>
 
-  <button class="legend-trigger" id="legendTrigger" type="button">The Legend</button>
+  <div class="legend-box">
+    <div class="legend-label">The Legend</div>
+    <div class="legend-viewport">
+      <div class="legend-scroll">
+        <div class="legend-copy-1">
+          <p>Long before kingdoms were carved from stone... before the first sword was forged... before men learned to fear the darkness... there was only the Storm.</p>
+          <p>When the heavens were torn apart by the Great Thunder War, the sky burned for a thousand nights. Titans clashed. Mountains shattered. Oceans rose. The world stood on the edge of oblivion.</p>
+          <p>Then came the final strike.</p>
+          <p>Not of fire.</p>
+          <p>Not of light.</p>
+          <p>But of destiny.</p>
+          <p>It pierced the heart of the last warrior who refused to kneel.</p>
+          <p>Instead of death, the storm became one with him.</p>
+          <p>His heart transformed into an eternal source of thunder, courage, and unbreakable will.</p>
+          <p>From that moment...</p>
+          <p>He became THUNDERHEART.</p>
+          <p>He was never a king.</p>
+          <p>Never a god.</p>
+          <p>Never a conqueror.</p>
+          <p>He was the guardian between hope and darkness.</p>
+          <p>A lone warrior destined to rise whenever the world stood on the brink of ruin.</p>
+          <p>When tyrants sought dominion...</p>
+          <p>When monsters walked the earth...</p>
+          <p>When fear silenced the brave...</p>
+          <p>The storm answered.</p>
+          <p>But ThunderHeart was never meant to live forever.</p>
+          <p>His power could not die...</p>
+          <p>Only sleep.</p>
+          <p>When one bearer falls, the Heart chooses another.</p>
+          <p>Not the strongest.</p>
+          <p>Not the richest.</p>
+          <p>Not the chosen by birth.</p>
+          <p>Only those willing to stand alone against impossible odds.</p>
+          <p>For ThunderHeart is not a man.</p>
+          <p>It is a legacy.</p>
+          <p>They say the signs always come first.</p>
+          <p>The wind grows still.</p>
+          <p>Clouds gather beneath a clear sky.</p>
+          <p>The distant rumble echoes across forgotten mountains.</p>
+          <p>And somewhere...</p>
+          <p>A heartbeat begins to thunder.</p>
+          <p>When that sound returns...</p>
+          <p>The darkness knows its time has ended.</p>
+        </div>
+        <div class="legend-copy-2">
+          <p>Long before kingdoms were carved from stone... before the first sword was forged... before men learned to fear the darkness... there was only the Storm.</p>
+          <p>When the heavens were torn apart by the Great Thunder War, the sky burned for a thousand nights. Titans clashed. Mountains shattered. Oceans rose. The world stood on the edge of oblivion.</p>
+          <p>Then came the final strike.</p>
+          <p>Not of fire.</p>
+          <p>Not of light.</p>
+          <p>But of destiny.</p>
+          <p>It pierced the heart of the last warrior who refused to kneel.</p>
+          <p>Instead of death, the storm became one with him.</p>
+          <p>His heart transformed into an eternal source of thunder, courage, and unbreakable will.</p>
+          <p>From that moment...</p>
+          <p>He became THUNDERHEART.</p>
+          <p>He was never a king.</p>
+          <p>Never a god.</p>
+          <p>Never a conqueror.</p>
+          <p>He was the guardian between hope and darkness.</p>
+          <p>A lone warrior destined to rise whenever the world stood on the brink of ruin.</p>
+          <p>When tyrants sought dominion...</p>
+          <p>When monsters walked the earth...</p>
+          <p>When fear silenced the brave...</p>
+          <p>The storm answered.</p>
+          <p>But ThunderHeart was never meant to live forever.</p>
+          <p>His power could not die...</p>
+          <p>Only sleep.</p>
+          <p>When one bearer falls, the Heart chooses another.</p>
+          <p>Not the strongest.</p>
+          <p>Not the richest.</p>
+          <p>Not the chosen by birth.</p>
+          <p>Only those willing to stand alone against impossible odds.</p>
+          <p>For ThunderHeart is not a man.</p>
+          <p>It is a legacy.</p>
+          <p>They say the signs always come first.</p>
+          <p>The wind grows still.</p>
+          <p>Clouds gather beneath a clear sky.</p>
+          <p>The distant rumble echoes across forgotten mountains.</p>
+          <p>And somewhere...</p>
+          <p>A heartbeat begins to thunder.</p>
+          <p>When that sound returns...</p>
+          <p>The darkness knows its time has ended.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="player">
     <div class="track-title">Stand And Fight</div>
@@ -450,54 +450,13 @@
   </div>
 
   <footer>© 2026 Thunderheart</footer>
-</div>
 
-<div class="legend-overlay" id="legendOverlay">
-  <button class="legend-close" id="legendClose" type="button" aria-label="Close">✕</button>
-  <div class="crawl-viewport">
-    <div class="crawl-text">
-      <h2>The Legend of Thunderheart</h2>
-      <p>Long before kingdoms were carved from stone... before the first sword was forged... before men learned to fear the darkness... there was only the Storm.</p>
-      <p>When the heavens were torn apart by the Great Thunder War, the sky burned for a thousand nights. Titans clashed. Mountains shattered. Oceans rose. The world stood on the edge of oblivion.</p>
-      <p>Then came the final strike.</p>
-      <p>Not of fire.</p>
-      <p>Not of light.</p>
-      <p>But of destiny.</p>
-      <p>It pierced the heart of the last warrior who refused to kneel.</p>
-      <p>Instead of death, the storm became one with him.</p>
-      <p>His heart transformed into an eternal source of thunder, courage, and unbreakable will.</p>
-      <p>From that moment...</p>
-      <p>He became THUNDERHEART.</p>
-      <p>He was never a king.</p>
-      <p>Never a god.</p>
-      <p>Never a conqueror.</p>
-      <p>He was the guardian between hope and darkness.</p>
-      <p>A lone warrior destined to rise whenever the world stood on the brink of ruin.</p>
-      <p>When tyrants sought dominion...</p>
-      <p>When monsters walked the earth...</p>
-      <p>When fear silenced the brave...</p>
-      <p>The storm answered.</p>
-      <p>But ThunderHeart was never meant to live forever.</p>
-      <p>His power could not die...</p>
-      <p>Only sleep.</p>
-      <p>When one bearer falls, the Heart chooses another.</p>
-      <p>Not the strongest.</p>
-      <p>Not the richest.</p>
-      <p>Not the chosen by birth.</p>
-      <p>Only those willing to stand alone against impossible odds.</p>
-      <p>For ThunderHeart is not a man.</p>
-      <p>It is a legacy.</p>
-      <p>They say the signs always come first.</p>
-      <p>The wind grows still.</p>
-      <p>Clouds gather beneath a clear sky.</p>
-      <p>The distant rumble echoes across forgotten mountains.</p>
-      <p>And somewhere...</p>
-      <p>A heartbeat begins to thunder.</p>
-      <p>When that sound returns...</p>
-      <p>The darkness knows its time has ended.</p>
-    </div>
+  <div class="logo-mark">
+    <img src="assets/logo.png" alt="Thunderheart">
+    <div class="mark-sweep"></div>
   </div>
 </div>
+
 
 <script>
   const audio = document.getElementById('audio');
@@ -585,35 +544,6 @@
   }
 
   setTimeout(advanceFrame, holdMs[0]);
-
-  const legendTrigger = document.getElementById('legendTrigger');
-  const legendClose = document.getElementById('legendClose');
-  const legendOverlay = document.getElementById('legendOverlay');
-  const crawlText = document.querySelector('.crawl-text');
-
-  function openLegend(){
-    legendOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    if(!reduceMotion){
-      crawlText.style.animation = 'none';
-      void crawlText.offsetWidth;
-      crawlText.style.animation = '';
-    }
-  }
-
-  function closeLegend(){
-    legendOverlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  legendTrigger.addEventListener('click', openLegend);
-  legendClose.addEventListener('click', closeLegend);
-  legendOverlay.addEventListener('click', (e) => {
-    if(e.target === legendOverlay) closeLegend();
-  });
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape') closeLegend();
-  });
 </script>
 
 </body>
