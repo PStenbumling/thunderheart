@@ -408,7 +408,7 @@
 <body>
 
 <div class="bg-scene" aria-hidden="true">
-  <img class="bg-frame bg-frame-center" id="bgFrame" src="assets/frames/frame-1.png" alt="">
+  <img class="bg-frame bg-frame-center" id="bgFrame" src="assets/ThunderHeart.png" alt="">
   <div class="bg-flash" id="bgFlash"></div>
   <div class="bg-vignette"></div>
 </div>
@@ -657,13 +657,10 @@
   const bgFrame = document.getElementById('bgFrame');
   const bgFlash = document.getElementById('bgFlash');
   const frameSources = [
-    'assets/frames/frame-1.png',
-    'assets/frames/frame-2.png',
-    'assets/frames/frame-3.png',
-    'assets/frames/frame-4.png',
-    'assets/frames/frame-5.png',
+    'assets/ThunderHeart.png',
   ];
-  const holdMs = [1800, 1500, 1300, 1300, 2600];
+  const holdMs = [2600];
+  const enableBgCycle = frameSources.length > 1;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let frameIndex = 0;
   let loopTimer = null;
@@ -680,6 +677,9 @@
   }
 
   function advanceFrame(){
+    if(!enableBgCycle){
+      return;
+    }
     frameIndex = (frameIndex + 1) % frameSources.length;
     const nextSrc = frameSources[frameIndex];
 
@@ -698,7 +698,9 @@
   }
 
   setFrame(frameSources[0]);
-  queueNextFrame();
+  if(enableBgCycle){
+    queueNextFrame();
+  }
 
   frameSources.slice(1).forEach((src) => {
     const img = new Image();
