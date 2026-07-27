@@ -11,7 +11,7 @@
 <meta property="og:type" content="music.musician">
 <meta property="og:title" content="Thunderheart - An Epic Saga">
 <meta property="og:description" content="Listen to Thunderheart's music and read the legend behind the band.">
-<meta property="og:image" content="assets/logo.png">
+<meta property="og:image" content="assets/ThunderHeart-cover.png">
 <meta property="og:url" content="https://pstenbumling.github.io/thunderheart/">
 
 <meta name="twitter:card" content="summary_large_image">
@@ -203,7 +203,22 @@
     text-transform:uppercase;
     letter-spacing:0.15em;
     margin-top:2px;
-    margin-bottom:18px;
+    margin-bottom:12px;
+  }
+
+  .cover-wrap{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    margin-bottom:14px;
+  }
+  .cover-art{
+    width:min(240px, 62vw);
+    aspect-ratio:1/1;
+    object-fit:cover;
+    border-radius:14px;
+    border:1px solid rgba(79,214,255,0.24);
+    box-shadow:0 10px 28px rgba(0,0,0,0.32), 0 0 26px rgba(79,214,255,0.16);
   }
 
   .controls{
@@ -511,6 +526,10 @@
     <div class="track-sub">Thunderheart</div>
     <div class="sr-only" id="trackAnnounce" aria-live="polite"></div>
 
+    <div class="cover-wrap">
+      <img id="coverArt" class="cover-art" src="assets/ThunderHeart-cover.png" alt="Thunderheart cover art">
+    </div>
+
     <div class="controls">
       <button class="play-btn" id="playBtn" aria-label="Play">
         <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -568,12 +587,14 @@
   const durTime = document.getElementById('durTime');
   const trackTitle = document.getElementById('trackTitle');
   const trackAnnounce = document.getElementById('trackAnnounce');
+  const coverArt = document.getElementById('coverArt');
   const playlistItems = document.querySelectorAll('.playlist-item');
+  const defaultCover = 'assets/ThunderHeart-cover.png';
 
   const tracks = [
-    { title: 'The Last Stormkeeper', src: 'assets/the-last-stormkeeper.mp3' },
-    { title: 'Ride The Storm', src: 'assets/stand-and-fight.mp3' },
-    { title: 'Northern Star', src: 'assets/northern-star.mp3' },
+    { title: 'The Last Stormkeeper', src: 'assets/the-last-stormkeeper.mp3', cover: defaultCover },
+    { title: 'Ride The Storm', src: 'assets/ride-the-storm.mp3', cover: defaultCover },
+    { title: 'Northern Star', src: 'assets/northern-star.mp3', cover: defaultCover },
   ];
   let currentTrack = 0;
 
@@ -587,7 +608,10 @@
   function loadTrack(index, autoplay){
     currentTrack = index;
     const t = tracks[index];
+    const coverSrc = t.cover || defaultCover;
     audio.src = t.src;
+    coverArt.src = coverSrc;
+    coverArt.alt = `${t.title} cover art`;
     trackTitle.textContent = `${String(index + 1).padStart(2, '0')}. ${t.title}`;
     playlistItems.forEach((el, i) => el.classList.toggle('active', i === index));
     playlistItems.forEach((el, i) => el.setAttribute('aria-selected', i === index ? 'true' : 'false'));
@@ -595,6 +619,18 @@
     curTime.textContent = '0:00';
     durTime.textContent = '0:00';
     trackAnnounce.textContent = `Now playing: ${t.title}`;
+
+    if('mediaSession' in navigator){
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: t.title,
+        artist: 'Thunderheart',
+        album: 'Thunderheart - An Epic Saga',
+        artwork: [
+          { src: coverSrc, sizes: '512x512', type: coverSrc.endsWith('.jpg') ? 'image/jpeg' : 'image/png' },
+        ],
+      });
+    }
+
     if(autoplay){ audio.play(); }
   }
 
