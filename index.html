@@ -3,13 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thunderheart</title>
+<title>Thunderheart - An Epic Saga</title>
+<meta name="description" content="Thunderheart - An Epic Saga. Listen to The Last Stormkeeper, Stand And Fight, and Northern Star.">
+<meta name="theme-color" content="#050608">
+<link rel="icon" type="image/png" href="assets/logo.png">
+
+<meta property="og:type" content="music.musician">
+<meta property="og:title" content="Thunderheart - An Epic Saga">
+<meta property="og:description" content="Listen to Thunderheart's music and read the legend behind the band.">
+<meta property="og:image" content="assets/logo.png">
+<meta property="og:url" content="https://pstenbumling.github.io/thunderheart/">
+
+<meta name="twitter:card" content="summary_large_image">
 <style>
   :root{
     --bg:#050608;
     --steel:#1a2230;
     --blue:#4fd6ff;
-    --blue-dim:#2a7ea3;
+    --blue-dim:#4a9bc9;
     --gold:#e8b84b;
     --text:#dbe6ef;
   }
@@ -24,6 +35,22 @@
   body{
     background:var(--bg);
     position:relative;
+  }
+
+  :focus{ outline:none; }
+  :focus-visible{
+    outline:2px solid var(--blue);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  .sr-only{
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0, 0, 0, 0);
+    white-space:nowrap;
   }
 
   .bg-scene{
@@ -282,6 +309,9 @@
   }
   .playlist-item:hover{ color:var(--text); }
   .playlist-item.active{ color:var(--blue); }
+  .playlist-item.active .pl-num::before{
+    content:"▶ ";
+  }
   .pl-num{
     font-size:0.54rem;
     font-variant-numeric:tabular-nums;
@@ -384,7 +414,7 @@
 </div>
 
 <div class="wrap">
-  <div class="tagline">Thunderheart &mdash; An Epic Saga</div>
+  <h1 class="tagline">Thunderheart &mdash; An Epic Saga</h1>
 
   <div class="center-stack">
 
@@ -432,7 +462,7 @@
           <p>When that sound returns...</p>
           <p>The darkness knows its time has ended.</p>
         </div>
-        <div class="legend-copy-2">
+        <div class="legend-copy-2" aria-hidden="true">
           <p>Long before kingdoms were carved from stone... before the first sword was forged... before men learned to fear the darkness... there was only the Storm.</p>
           <p>When the heavens were torn apart by the Great Thunder War, the sky burned for a thousand nights. Titans clashed. Mountains shattered. Oceans rose. The world stood on the edge of oblivion.</p>
           <p>Then came the final strike.</p>
@@ -479,6 +509,7 @@
   <div class="player">
     <div class="track-title" id="trackTitle">01. The Last Stormkeeper</div>
     <div class="track-sub">Thunderheart</div>
+    <div class="sr-only" id="trackAnnounce" aria-live="polite"></div>
 
     <div class="controls">
       <button class="play-btn" id="playBtn" aria-label="Play">
@@ -487,7 +518,7 @@
       </button>
 
       <div class="seek-area">
-        <input type="range" id="seek" min="0" max="100" value="0">
+        <input type="range" id="seek" min="0" max="100" value="0" aria-label="Track progress">
         <div class="time-row">
           <span id="curTime">0:00</span>
           <span id="durTime">0:00</span>
@@ -497,17 +528,17 @@
 
     <div class="volume-row">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
-      <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="1" aria-label="Volume">
     </div>
 
-    <div class="playlist" id="playlist">
-      <div class="playlist-item active" data-index="0">
+    <div class="playlist" id="playlist" role="listbox" aria-label="Track list">
+      <div class="playlist-item active" data-index="0" role="option" tabindex="0" aria-selected="true">
         <span class="pl-num">01</span><span class="pl-title">The Last Stormkeeper</span>
       </div>
-      <div class="playlist-item" data-index="1">
-        <span class="pl-num">02</span><span class="pl-title">Stand And Fight</span>
+      <div class="playlist-item" data-index="1" role="option" tabindex="0" aria-selected="false">
+        <span class="pl-num">02</span><span class="pl-title">Ride The Storm</span>
       </div>
-      <div class="playlist-item" data-index="2">
+      <div class="playlist-item" data-index="2" role="option" tabindex="0" aria-selected="false">
         <span class="pl-num">03</span><span class="pl-title">Northern Star</span>
       </div>
     </div>
@@ -536,11 +567,12 @@
   const curTime = document.getElementById('curTime');
   const durTime = document.getElementById('durTime');
   const trackTitle = document.getElementById('trackTitle');
+  const trackAnnounce = document.getElementById('trackAnnounce');
   const playlistItems = document.querySelectorAll('.playlist-item');
 
   const tracks = [
     { title: 'The Last Stormkeeper', src: 'assets/the-last-stormkeeper.mp3' },
-    { title: 'Stand And Fight', src: 'assets/stand-and-fight.mp3' },
+    { title: 'Ride The Storm', src: 'assets/stand-and-fight.mp3' },
     { title: 'Northern Star', src: 'assets/northern-star.mp3' },
   ];
   let currentTrack = 0;
@@ -558,14 +590,22 @@
     audio.src = t.src;
     trackTitle.textContent = `${String(index + 1).padStart(2, '0')}. ${t.title}`;
     playlistItems.forEach((el, i) => el.classList.toggle('active', i === index));
+    playlistItems.forEach((el, i) => el.setAttribute('aria-selected', i === index ? 'true' : 'false'));
     seek.value = 0;
     curTime.textContent = '0:00';
     durTime.textContent = '0:00';
+    trackAnnounce.textContent = `Now playing: ${t.title}`;
     if(autoplay){ audio.play(); }
   }
 
   playlistItems.forEach((el, i) => {
     el.addEventListener('click', () => loadTrack(i, true));
+    el.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        loadTrack(i, true);
+      }
+    });
   });
 
   playBtn.addEventListener('click', () => {
@@ -628,12 +668,6 @@
   let frameIndex = 0;
   let loopTimer = null;
 
-  const preloadedFrames = frameSources.map((src) => {
-    const img = new Image();
-    img.src = src;
-    return img;
-  });
-
   function setFrame(src){
     bgFrame.src = src;
   }
@@ -663,15 +697,12 @@
     queueNextFrame();
   }
 
-  Promise.all(preloadedFrames.map((img) => {
-    if(img.complete) return Promise.resolve();
-    return new Promise((resolve) => {
-      img.onload = resolve;
-      img.onerror = resolve;
-    });
-  })).finally(() => {
-    setFrame(frameSources[0]);
-    queueNextFrame();
+  setFrame(frameSources[0]);
+  queueNextFrame();
+
+  frameSources.slice(1).forEach((src) => {
+    const img = new Image();
+    img.src = src;
   });
 </script>
 
