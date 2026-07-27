@@ -1,0 +1,24 @@
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Editor / local tooling
+.vscode/
+.claude/
+
+# Temporary media exports in repository root
+/1.png
+/2.png
+/file.png
+/ChatGPT Image*.png
+/Ride the Storm.mp3
+/Stand And Fight.mp3
+/The Last Stormkeeper.mp3
+/Northern Star.mp3
+
+# Temporary conversion artifacts
+*.tmp.mp3
+
+# Generic local backup artifacts
+*.bak
+*.orig
