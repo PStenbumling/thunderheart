@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ThunderHeart – An Epic Saga</title>
+  <meta name="description" content="ThunderHeart – An Epic Saga. The legend, and a private preview of the album.">
+  <meta property="og:title" content="ThunderHeart – An Epic Saga">
+  <meta property="og:image" content="https://pstenbumling.github.io/thunderheart/assets/cover.jpg">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: rgba(12, 18, 28, 0.8);
+      --line: rgba(79, 214, 255, 0.22);
+      --text: #e6eef5;
+      --muted: #8fa3b8;
+      --hot: #4fd6ff;
+      --violet: #e8b84b;
+      --on-hot: #04121a;
+      --glow: rgba(79, 214, 255, 0.55);
+      --chrome: linear-gradient(180deg, #ffffff 0%, #e8f6ff 42%, #6f8fa8 50%, #f4f8ff 56%, #9fd8f5 100%);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    .backdrop {
+      position: fixed; inset: -40px;
+      background: url("assets/cover.jpg") center / cover no-repeat;
+      filter: blur(40px) saturate(1.3) brightness(0.35);
+      z-index: -2;
+    }
+    .backdrop::after {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 0%, var(--bg) 85%);
+    }
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 48px 16px 64px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 40px;
+      align-items: center;
+    }
+    .cover {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+      border-radius: 6px;
+      box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(79, 214, 255, 0.2), 0 0 120px rgba(232, 184, 75, 0.15);
+      display: block;
+    }
+    .eyebrow {
+      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--violet); margin: 0 0 8px;
+    }
+    h1 {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(40px, 7vw, 64px);
+      line-height: 0.95;
+      margin: 0;
+      background: var(--chrome);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      letter-spacing: 0.02em;
+      filter: drop-shadow(0 2px 0 #1d5f80) drop-shadow(0 0 18px var(--glow));
+    }
+    h2 {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 22px; font-weight: 400;
+      margin: 12px 0 28px;
+      color: var(--hot);
+      text-shadow: 0 0 12px var(--glow);
+      letter-spacing: 0.08em;
+    }
+    .player {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+    .now { display: flex; align-items: center; gap: 16px; }
+    .play {
+      flex: none;
+      width: 56px; height: 56px; border-radius: 50%;
+      border: none; cursor: pointer;
+      background: var(--hot); color: var(--on-hot);
+      display: grid; place-items: center;
+      box-shadow: 0 0 24px var(--glow);
+      transition: transform .15s;
+    }
+    .play:hover { transform: scale(1.06); }
+    .play:focus-visible, .track:focus-visible, .seek:focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; }
+    .play svg { width: 22px; height: 22px; fill: currentColor; }
+    .now-title { font-weight: 600; font-size: 17px; }
+    .now-sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .timeline { display: flex; align-items: center; gap: 10px; margin: 18px 0 14px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .seek {
+      flex: 1; -webkit-appearance: none; appearance: none;
+      height: 4px; border-radius: 2px; cursor: pointer;
+      background: linear-gradient(to right, var(--hot) var(--p, 0%), rgba(255,255,255,0.15) var(--p, 0%));
+    }
+    .seek::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px var(--hot); }
+    .seek::-moz-range-thumb { width: 14px; height: 14px; border: none; border-radius: 50%; background: #fff; box-shadow: 0 0 8px var(--hot); }
+    ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+    .track {
+      width: 100%;
+      display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 12px;
+      padding: 14px 8px;
+      background: none; border: none; border-bottom: 1px solid var(--line);
+      color: var(--text); font: inherit; text-align: left; cursor: pointer;
+    }
+    .track:hover { background: rgba(79, 214, 255, 0.08); }
+    .track .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .track .d { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .track.active .t { color: var(--hot); }
+    .track.active .n { color: var(--hot); }
+    .lock { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .lock p { margin: 0; color: var(--muted); font-size: 14px; }
+    .lock-row { display: flex; gap: 10px; }
+    .lock input {
+      flex: 1; min-width: 0;
+      padding: 12px 14px; border-radius: 8px;
+      border: 1px solid var(--line); background: rgba(0, 0, 0, 0.35);
+      color: var(--text); font: inherit;
+    }
+    .lock input:focus { outline: 2px solid var(--violet); outline-offset: 1px; }
+    .lock button, .relock {
+      border: none; border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600;
+    }
+    .lock button { padding: 12px 18px; background: var(--hot); color: var(--on-hot); box-shadow: 0 0 18px var(--glow); }
+    .lock button:disabled { opacity: 0.6; cursor: wait; }
+    .lock .error { color: var(--violet); min-height: 1.2em; }
+    .relock { margin-top: 14px; padding: 6px 0; background: none; color: var(--muted); font-size: 12px; font-weight: 400; }
+    .relock:hover { color: var(--text); }
+    .legend {
+      max-width: 720px;
+      margin: 0 auto 48px;
+      padding: 0 16px;
+      text-align: center;
+    }
+    .legend h3 {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 13px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--violet); margin: 0 0 16px;
+    }
+    .legend-view {
+      height: 280px; overflow: hidden;
+      -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+      mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    }
+    .legend-scroll { animation: legend 110s linear infinite; }
+    .legend-view:hover .legend-scroll { animation-play-state: paused; }
+    .legend p { margin: 0 0 14px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+    .legend p.strong { color: var(--text); font-family: "Cinzel", Georgia, serif; font-weight: 700; letter-spacing: 0.06em; }
+    @keyframes legend { to { transform: translateY(-50%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .legend-view { overflow-y: auto; }
+      .legend-scroll { animation: none; }
+      .legend-scroll > [aria-hidden] { display: none; }
+    }
+    [hidden] { display: none !important; }
+    footer { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 32px; }
+    @media (max-width: 760px) {
+      main { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 24px; }
+      .info { text-align: center; }
+      .player { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <main>
+    <img class="cover" src="assets/cover.jpg" alt="ThunderHeart – An Epic Saga album cover" width="1200" height="1200">
+    <section class="info">
+      <p class="eyebrow">Stenbumling presents</p>
+      <h1>Thunder<br>Heart</h1>
+      <h2>An Epic Saga</h2>
+
+      <div class="player">
+        <form class="lock" id="lock">
+          <p>Private preview. Enter the password to listen.</p>
+          <div class="lock-row">
+            <input id="password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+            <button id="unlock" type="submit">Unlock</button>
+          </div>
+          <div class="error" id="error" role="alert"></div>
+        </form>
+
+        <div id="unlocked" hidden>
+        <div class="now">
+          <button class="play" id="play" aria-label="Play">
+            <svg id="icon" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
+          </button>
+          <div>
+            <div class="now-title" id="nowTitle"></div>
+            <div class="now-sub">ThunderHeart</div>
+          </div>
+        </div>
+        <div class="timeline">
+          <span id="cur">0:00</span>
+          <input class="seek" id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+          <span id="dur">0:00</span>
+        </div>
+        <ol id="list"></ol>
+        <button class="relock" id="relock" type="button">Lock</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="legend" aria-labelledby="legend-title">
+    <h3 id="legend-title">The Legend</h3>
+    <div class="legend-view">
+      <div class="legend-scroll">
+        <div id="legend">
+          <p>Long before kingdoms were carved from stone... before the first sword was forged... before men learned to fear the darkness... there was only the Storm.</p>
+          <p>When the heavens were torn apart by the Great Thunder War, the sky burned for a thousand nights. Titans clashed. Mountains shattered. Oceans rose. The world stood on the edge of oblivion.</p>
+          <p>Then came the final strike.</p>
+          <p>Not of fire.</p>
+          <p>Not of light.</p>
+          <p>But of destiny.</p>
+          <p>It pierced the heart of the last warrior who refused to kneel.</p>
+          <p>Instead of death, the storm became one with him.</p>
+          <p>His heart transformed into an eternal source of thunder, courage, and unbreakable will.</p>
+          <p>From that moment...</p>
+          <p class="strong">He became THUNDERHEART.</p>
+          <p>He was never a king.</p>
+          <p>Never a god.</p>
+          <p>Never a conqueror.</p>
+          <p>He was the guardian between hope and darkness.</p>
+          <p>A lone warrior destined to rise whenever the world stood on the brink of ruin.</p>
+          <p>When tyrants sought dominion...</p>
+          <p>When monsters walked the earth...</p>
+          <p>When fear silenced the brave...</p>
+          <p>The storm answered.</p>
+          <p>But ThunderHeart was never meant to live forever.</p>
+          <p>His power could not die...</p>
+          <p>Only sleep.</p>
+          <p>When one bearer falls, the Heart chooses another.</p>
+          <p>Not the strongest.</p>
+          <p>Not the richest.</p>
+          <p>Not the chosen by birth.</p>
+          <p>Only those willing to stand alone against impossible odds.</p>
+          <p>For ThunderHeart is not a man.</p>
+          <p class="strong">It is a legacy.</p>
+          <p>They say the signs always come first.</p>
+          <p>The wind grows still.</p>
+          <p>Clouds gather beneath a clear sky.</p>
+          <p>The distant rumble echoes across forgotten mountains.</p>
+          <p>And somewhere...</p>
+          <p>A heartbeat begins to thunder.</p>
+          <p>When that sound returns...</p>
+          <p class="strong">The darkness knows its time has ended.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>© ThunderHeart / Stenbumling · Patric Sten™</footer>
+
+  <audio id="audio" preload="metadata"></audio>
+
+  <script>
+    // Tracks are AES-GCM encrypted by tools/encrypt.mjs; see that file for the format.
+    const VAULT = "assets/vault/";
+    const KEY_STORE = "thunderheart-key";
+    let tracks = [];
+    let key = null;
+    const urls = new Map();
+
+    const legend = document.getElementById("legend");
+    const legendCopy = legend.cloneNode(true);
+    legendCopy.removeAttribute("id");
+    legendCopy.setAttribute("aria-hidden", "true");
+    legend.after(legendCopy);
+
+    const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+    const toB64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+
+    async function open(bytes) {
+      return crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes.slice(0, 12) }, key, bytes.slice(12));
+    }
+
+    async function deriveKey(password, vault) {
+      const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+      return crypto.subtle.deriveKey(
+        { name: "PBKDF2", hash: "SHA-256", salt: b64(vault.salt), iterations: vault.iterations },
+        base, { name: "AES-GCM", length: 256 }, true, ["decrypt"],
+      );
+    }
+
+    async function readManifest(vault) {
+      tracks = JSON.parse(new TextDecoder().decode(await open(b64(vault.manifest))));
+    }
+
+    async function trackUrl(i) {
+      const id = tracks[i].id;
+      if (!urls.has(id)) {
+        const res = await fetch(`${VAULT}${id}.bin`);
+        const mp3 = await open(new Uint8Array(await res.arrayBuffer()));
+        urls.set(id, URL.createObjectURL(new Blob([mp3], { type: "audio/mpeg" })));
+      }
+      return urls.get(id);
+    }
+
+    // A few ms of silence, played straight from a tap: iOS only lets an audio element
+    // play() after an await (fetch + decrypt) once it has played inside a user gesture.
+    const SILENCE = "data:audio/mpeg;base64,//sQxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+xLEKYPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+xDEU4PAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==";
+    let primed = false;
+    let priming = false;
+
+    const PLAY = '<path d="M7 4v16l13-8z"/>';
+    const PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+
+    const audio = document.getElementById("audio");
+    const playBtn = document.getElementById("play");
+    const icon = document.getElementById("icon");
+    const seek = document.getElementById("seek");
+    const cur = document.getElementById("cur");
+    const dur = document.getElementById("dur");
+    const nowTitle = document.getElementById("nowTitle");
+    const list = document.getElementById("list");
+    const lockForm = document.getElementById("lock");
+    const passwordInput = document.getElementById("password");
+    const unlockBtn = document.getElementById("unlock");
+    const error = document.getElementById("error");
+    const unlocked = document.getElementById("unlocked");
+    let index = 0;
+    let loaded = -1;
+    let loading = 0;
+
+    const fmt = s => isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}` : "0:00";
+
+    function renderList() {
+      list.replaceChildren();
+      tracks.forEach((t, i) => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.className = "track";
+        for (const [cls, text] of [["n", i + 1], ["t", t.title], ["d", t.dur]]) {
+          const span = document.createElement("span");
+          span.className = cls;
+          span.textContent = text;
+          btn.appendChild(span);
+        }
+        btn.addEventListener("click", () => {
+          prime();
+          i === loaded ? toggle() : load(i, true);
+        });
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    function select(i) {
+      index = i;
+      nowTitle.textContent = tracks[i].title;
+      dur.textContent = tracks[i].dur;
+      list.querySelectorAll(".track").forEach((b, j) => b.classList.toggle("active", j === i));
+    }
+
+    function prime() {
+      if (primed) return;
+      primed = priming = true;
+      audio.src = SILENCE;
+      audio.play().catch(() => {});
+    }
+
+    function setMediaSession(i) {
+      if (!("mediaSession" in navigator)) return;
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: tracks[i].title,
+        artist: "ThunderHeart",
+        album: "An Epic Saga",
+        artwork: [{ src: new URL("assets/cover.jpg", location.href).href, sizes: "1200x1200", type: "image/jpeg" }],
+      });
+    }
+
+    async function load(i, autoplay) {
+      select(i);
+      const token = ++loading;
+      const url = await trackUrl(i);
+      if (token !== loading) return;
+      loaded = i;
+      priming = false;
+      audio.src = url;
+      setMediaSession(i);
+      if (autoplay) audio.play().catch(() => {});
+    }
+
+    async function toggle() {
+      if (loaded !== index) return load(index, true);
+      audio.paused ? audio.play() : audio.pause();
+    }
+
+    async function fetchVault() {
+      return (await fetch(`${VAULT}vault.json`, { cache: "no-cache" })).json();
+    }
+
+    function showPlayer() {
+      renderList();
+      select(0);
+      lockForm.hidden = true;
+      unlocked.hidden = false;
+    }
+
+    lockForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      prime();
+      unlockBtn.disabled = true;
+      error.textContent = "";
+      try {
+        const vault = await fetchVault();
+        key = await deriveKey(passwordInput.value, vault);
+        await readManifest(vault);
+      } catch {
+        key = null;
+        error.textContent = "Wrong password.";
+        unlockBtn.disabled = false;
+        passwordInput.select();
+        return;
+      }
+      try { sessionStorage.setItem(KEY_STORE, toB64(await crypto.subtle.exportKey("raw", key))); } catch {}
+      passwordInput.value = "";
+      unlockBtn.disabled = false;
+      showPlayer();
+    });
+
+    document.getElementById("relock").addEventListener("click", () => {
+      try { sessionStorage.removeItem(KEY_STORE); } catch {}
+      location.reload();
+    });
+
+    // Stay unlocked across reloads in the same tab.
+    (async () => {
+      let stored = null;
+      try { stored = sessionStorage.getItem(KEY_STORE); } catch {}
+      if (!stored) return passwordInput.focus();
+      try {
+        key = await crypto.subtle.importKey("raw", b64(stored), "AES-GCM", false, ["decrypt"]);
+        await readManifest(await fetchVault());
+        showPlayer();
+      } catch {
+        key = null;
+        try { sessionStorage.removeItem(KEY_STORE); } catch {}
+        passwordInput.focus();
+      }
+    })();
+
+    function setIcon() {
+      const playing = !audio.paused;
+      icon.innerHTML = playing ? PAUSE : PLAY;
+      playBtn.setAttribute("aria-label", playing ? "Pause" : "Play");
+    }
+
+    playBtn.addEventListener("click", () => {
+      prime();
+      toggle();
+    });
+    audio.addEventListener("play", () => priming || setIcon());
+    audio.addEventListener("pause", () => priming || setIcon());
+    audio.addEventListener("loadedmetadata", () => priming || (dur.textContent = fmt(audio.duration)));
+    audio.addEventListener("timeupdate", () => {
+      if (priming) return;
+      const p = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
+      seek.value = p;
+      seek.style.setProperty("--p", `${p / 10}%`);
+      cur.textContent = fmt(audio.currentTime);
+    });
+    audio.addEventListener("ended", () => {
+      if (priming) return;
+      if (index < tracks.length - 1) load(index + 1, true);
+      else { load(0, false); setIcon(); }
+    });
+    seek.addEventListener("input", () => {
+      if (loaded === index && audio.duration) audio.currentTime = (seek.value / 1000) * audio.duration;
+      seek.style.setProperty("--p", `${seek.value / 10}%`);
+    });
+
+    // Lock screen, headphones and car controls.
+    if ("mediaSession" in navigator) {
+      const ms = navigator.mediaSession;
+      ms.setActionHandler("play", () => toggle());
+      ms.setActionHandler("pause", () => audio.pause());
+      ms.setActionHandler("previoustrack", () => load(index > 0 ? index - 1 : 0, true));
+      ms.setActionHandler("nexttrack", () => index < tracks.length - 1 && load(index + 1, true));
+      ms.setActionHandler("seekto", d => (audio.currentTime = d.seekTime));
+    }
+  </script>
+</body>
+</html>

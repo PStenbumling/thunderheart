@@ -1,0 +1,18 @@
+# Audio originals and cut/tagged mp3s: never commit (only assets/vault/ is public)
+/music/
+/private/
+*.mp3
+
+# Local-only material
+/_archive/
+/story-bible/
+/*-lyrics.md
+/Thunderheart-Legend.md
+/IMPROVEMENTS.md
+/.claude/
+/.playwright-mcp/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
